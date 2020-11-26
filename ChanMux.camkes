@@ -105,5 +105,5 @@ import <if_OS_Logger.camkes>;
 //------------------------------------------------------------------------------
 // multi instance helpers
 
-#define ChanMux_CLIENT_ASSIGN_BADGES(...) \
-    FOR_EACH_1FP_2VP(ChanMux_CLIENT_ASSIGN_BADGE, __VA_ARGS__)
+#define ChanMux_INSTANCE_ASSIGN_CLIENT_BADGES(...) \
+            FOR_EACH_1FP_2VP(ChanMux_CLIENT_ASSIGN_BADGE, __VA_ARGS__)
