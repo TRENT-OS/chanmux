@@ -1,0 +1,14 @@
+/*
+ *  ChanMux defaults for the i.MX6 SoloX Nitrogen Board.
+ *
+ *  Copyright (C) 2020, Hensoldt Cyber GmbH
+ *
+ */
+
+
+#if !defined(UART_CHANMUX)
+
+// kernel log uses UART_0, so we can use UART_1 for ChanMux
+#define UART_CHANMUX    UART_1
+
+#endif // !defined(UART_CHANMUX)
