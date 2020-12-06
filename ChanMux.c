@@ -7,6 +7,7 @@
 #include "ChanMux/ChanMux.h"
 #include "OS_Dataport.h"
 #include "lib_io/FifoDataport.h"
+#include "ringbuffer.h"
 
 #include <camkes.h>
 
@@ -112,7 +113,7 @@ void pre_init(void)
 /**
  * @brief loads bytes from the underlying FIFO into the internal one
  *
- * @param fifo the internal FIFO
+ * @param rb the internal ring buffer
  * @param underlyingFifo the underlying FIFO
  *
  * @return processing_boost, by default we prefer reading data from the dataport
@@ -124,7 +125,7 @@ void pre_init(void)
  */
 static size_t
 loadInternalFifo(
-    CharFifo* fifo,
+    ringbuffer_t* rb,
     FifoDataport* underlyingFifo)
 {
     size_t processing_boost = 0;
@@ -140,24 +141,13 @@ loadInternalFifo(
 
         char const* buf_port = FifoDataport_getFirst(underlyingFifo);
         assert( NULL != buf_port );
-
-        // copy from dataport to internal fifo
-        size_t copied = 0;
-        do
-        {
-            if (!CharFifo_push(fifo, &buf_port[copied]))
-            {
-                break;
-            }
-            copied++;
-        }
-        while (copied < avail);
+        size_t copied = ringbuffer_write(rb, buf_port, avail);
         FifoDataport_remove(underlyingFifo, copied);
 
         // if our internal FIFO is more than 75% filled, give processing
         // of data a boost
-        const size_t watermark = (CharFifo_getCapacity(fifo) / 4) * 3;
-        const size_t used = CharFifo_getSize(fifo);
+        size_t watermark = (ringbuffer_get_capacity(rb) / 4) * 3;
+        size_t used = ringbuffer_get_used(rb);
         if (used > watermark)
         {
             processing_boost = used - watermark;
@@ -178,19 +168,19 @@ loadInternalFifo(
  *  internal FIFO. Finally it does process the bytes with ChanMux_takeByte() and
  *  consume them from the internal FIFO
  *
- * @param fifo the internal FIFO
+ * @param rb the internal ring buffer
  * @param underlyingFifo the underlying FIFO
  *
  * @return true if successful
  */
 static bool
 extractAndProcessData(
-    CharFifo* fifo,
+    ringbuffer_t* rb,
     FifoDataport* underlyingFifo,
     volatile char* fifoOverflow)
 {
     // if there is no data in the FIFO then wait for new data
-    if (CharFifo_isEmpty(fifo) && FifoDataport_isEmpty(underlyingFifo))
+    if (ringbuffer_is_empty(rb) && FifoDataport_isEmpty(underlyingFifo))
     {
         // no new data will arrive if there was an overflow
         if (0 != *fifoOverflow)
@@ -205,22 +195,36 @@ extractAndProcessData(
         underlyingChan_eventHasData_wait();
     }
 
-    size_t processing_boost = loadInternalFifo(fifo, underlyingFifo);
+    size_t processing_boost = loadInternalFifo(rb, underlyingFifo);
 
     // get data to process from our internal FIFO
     do
     {
-        char const* char_container = CharFifo_getFirst(fifo);
-        if (NULL == char_container)
+        void* p = NULL;
+        size_t len = ringbuffer_get_read_ptr(rb, &p);
+        if (0 == len)
         {
             break; // FIFO is empty
         }
 
-        ChanMux_takeByte(get_instance_ChanMux(), *char_container);
-        CharFifo_pop(fifo);
+        size_t cnt = 0;
+        do
+        {
+            char c = *((char*)((uintptr_t)p + cnt ));
+            ChanMux_takeByte(get_instance_ChanMux(), c);
+            cnt++;
 
+            if (0 == processing_boost)
+            {
+                break;
+            }
+            processing_boost--;
+        }
+        while (cnt < len);
+
+        ringbuffer_read(rb, NULL, cnt); // flush
     }
-    while (0 < processing_boost--);
+    while (processing_boost > 0);
 
     return true;
 }
@@ -239,17 +243,13 @@ int run()
 
     FifoDataport* underlyingFifo = (FifoDataport*)dataport_base;
 
-    static char fifo_buffer[2048]; // value found from testing
-    CharFifo fifo;
-    if (!CharFifo_ctor(&fifo, fifo_buffer, sizeof(fifo_buffer)))
-    {
-        Debug_LOG_ERROR("CharFifo_ctor() failed");
-        return -1;
-    }
+    static uint8_t fifo_buffer[2048] __attribute__((aligned(2048)));
+    ringbuffer_t rb;
+    ringbuffer_init(&rb, fifo_buffer, sizeof(fifo_buffer));
 
     for (;;)
     {
-        if (!extractAndProcessData(&fifo, underlyingFifo, fifoOverflow))
+        if (!extractAndProcessData(&rb, underlyingFifo, fifoOverflow))
         {
             Debug_LOG_ERROR("[%s] extractAndProcessData() failed",
                             get_instance_name());
