@@ -5,7 +5,7 @@
  *
  */
 
- #pragma once
+#pragma once
 
 #include "ChanMux.camkes"
 #include "UART/Uart.camkes"
