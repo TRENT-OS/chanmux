@@ -38,7 +38,7 @@
 #define ChanMux_UART_INSTANCE_CONNECT_CLIENT( \
     ...) \
     \
-    ChanMux_INSTANCE_CONNECT_CLIENTS(__VA_ARGS__)
+    ChanMux_INSTANCE_CONNECT_CLIENT(__VA_ARGS__)
 
 
 //------------------------------------------------------------------------------

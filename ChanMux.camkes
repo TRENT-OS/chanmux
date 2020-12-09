@@ -99,12 +99,12 @@ import <if_OS_Logger.camkes>;
 
 #endif //defined(ChanMux_on_UART)
 
-//------------------------------------------------------------------------------
-// multi instance helpers
-
-#define ChanMux_INSTANCE_CONNECT_CLIENTS(_inst_, _client_inst_, ...) \
+#define ChanMux_INSTANCE_CONNECT_CLIENT(_inst_, _client_inst_, ...) \
     ChanMux_INSTANCE_CONNECT_INTERFACE(_inst_, _client_inst_) \
     FOR_EACH_1P(ChanMux_INSTANCE_CONNECT_CHANNEL, _inst_, _client_inst_, __VA_ARGS__)
+
+//------------------------------------------------------------------------------
+// multi instance helpers
 
 #define ChanMux_CLIENT_ASSIGN_BADGES(...) \
     FOR_EACH_1FP_2VP(ChanMux_CLIENT_ASSIGN_BADGE, __VA_ARGS__)
