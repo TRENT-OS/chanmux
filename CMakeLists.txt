@@ -48,7 +48,8 @@ function(ChanMux_DeclareCAmkESComponent
         LIBS
             ${system_config_lib}
             os_core_api
-            os_libs
+            lib_macros
+            lib_io
             chanmux_server
     )
 

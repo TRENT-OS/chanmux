@@ -16,7 +16,7 @@ import <if_OS_Logger.camkes>;
 #include "ChanMux_plat_defaults.camkes"
 #include "ChanMuxHelper.camkes"
 
-#include "LibMacros/ForEach.h"
+#include "lib_macros/ForEach.h"
 
 //------------------------------------------------------------------------------
 // Component definitions, variable arguments are a list of pairs

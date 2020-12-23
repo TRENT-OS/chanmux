@@ -6,7 +6,7 @@
 
 #include "ChanMux/ChanMux.h"
 #include "OS_Dataport.h"
-#include "LibIO/FifoDataport.h"
+#include "lib_io/FifoDataport.h"
 
 #include <camkes.h>
 
