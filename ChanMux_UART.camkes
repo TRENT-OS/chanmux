@@ -26,10 +26,10 @@
     \
     UART_INSTANCE_CONNECT_CLIENT(\
         _uart_inst_,\
-        _inst_.UnderlyingChan_Rpc,\
-        _inst_.UnderlyingChan_inputFifoDataport,\
-        _inst_.UnderlyingChan_outputDataport,\
-        _inst_.UnderlyingChan_EventHasData)
+        _inst_.underlyingChan_rpc,\
+        _inst_.underlyingChan_input_port,\
+        _inst_.underlyingChan_output_port,\
+        _inst_.underlyingChan_eventHasData)
 
 
 //------------------------------------------------------------------------------

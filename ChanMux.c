@@ -31,8 +31,8 @@ get_instance_ChanMux(void)
     {
         static const ChanMux_ConfigLowerChan_t cfgChanMux_lowerOut =
         {
-            .port = OS_DATAPORT_ASSIGN(UnderlyingChan_outputDataport),
-            .writer = UnderlyingChan_Rpc_write,
+            .port = OS_DATAPORT_ASSIGN(underlyingChan_output_port),
+            .writer = underlyingChan_rpc_write,
         };
 
         // create a ChanMUX
@@ -202,7 +202,7 @@ extractAndProcessData(
 
         // block waiting for an event. Such an event indicates either
         // new data or a state change that needs attention.
-        UnderlyingChan_EventHasData_wait();
+        underlyingChan_eventHasData_wait();
     }
 
     size_t processing_boost = loadInternalFifo(fifo, underlyingFifo);
@@ -230,7 +230,7 @@ int run()
 {
     Debug_LOG_DEBUG("[%s] %s", get_instance_name(), __func__);
 
-    OS_Dataport_t port_in = OS_DATAPORT_ASSIGN(UnderlyingChan_inputFifoDataport);
+    OS_Dataport_t port_in = OS_DATAPORT_ASSIGN(underlyingChan_input_port);
 
     // the last byte of the dataport holds an overflow flag
     volatile char* fifoOverflow = (volatile char*)(

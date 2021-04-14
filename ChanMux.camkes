@@ -35,14 +35,14 @@ import <if_OS_Logger.camkes>;
         ) \
         /*-------------------------------------------------*/ \
         /* lower interface to underlying layer */ \
-        uses            if_OS_BlockingWrite  UnderlyingChan_Rpc; \
-        dataport        Buf                  UnderlyingChan_inputFifoDataport; \
-        dataport        Buf                  UnderlyingChan_outputDataport; \
-        consumes        EventDataAvailable   UnderlyingChan_EventHasData; \
+        uses            if_OS_BlockingWrite  underlyingChan_rpc; \
+        dataport        Buf                  underlyingChan_input_port; \
+        dataport        Buf                  underlyingChan_output_port; \
+        consumes        EventDataAvailable   underlyingChan_eventHasData; \
         /*-------------------------------------------------*/ \
         /* optional interface to log server */ \
-        maybe dataport  Buf                  LogServer_buf; \
-        maybe uses      if_OS_Logger         LogServer_rpc; \
+        maybe dataport  Buf                  logServer_port; \
+        maybe uses      if_OS_Logger         logServer_rpc; \
         attribute       int                  log_lvl; \
     }
 
@@ -92,10 +92,10 @@ import <if_OS_Logger.camkes>;
 #define ChanMux_INSTANCE_CONNECT(_inst_, _uart_inst_) \
     UART_INSTANCE_CONNECT_CLIENT(\
         _uart_inst_,\
-        _inst_.UnderlyingChan_Rpc,\
-        _inst_.UnderlyingChan_inputFifoDataport,\
-        _inst_.UnderlyingChan_outputDataport,\
-        _inst_.UnderlyingChan_EventHasData)
+        _inst_.underlyingChan_rpc,\
+        _inst_.underlyingChan_input_port,\
+        _inst_.underlyingChan_output_port,\
+        _inst_.underlyingChan_eventHasData)
 
 #endif //defined(ChanMux_on_UART)
 
