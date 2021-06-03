@@ -1,0 +1,10 @@
+/*
+ *  ChanMux defaults for platform QEMU/spike
+ *
+ *  Copyright (C) 2021, HENSOLDT Cyber GmbH
+ *
+ */
+
+#pragma once
+
+// there are no UARTs
