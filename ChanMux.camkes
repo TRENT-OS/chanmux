@@ -14,7 +14,6 @@ import <if_OS_Logger.camkes>;
 
 // platform specific defaults
 #include "ChanMux_plat_defaults.camkes"
-#include "ChanMuxHelper.camkes"
 
 #include "lib_macros/ForEach.h"
 
