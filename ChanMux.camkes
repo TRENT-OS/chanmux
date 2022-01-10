@@ -35,7 +35,7 @@ import <if_OS_Logger.camkes>;
         /*-------------------------------------------------*/ \
         /* lower interface to underlying layer */ \
         uses            if_OS_BlockingWrite  underlyingChan_rpc; \
-        dataport        Buf                  underlyingChan_input_port; \
+        dataport        Buf(4096)            underlyingChan_input_port; \
         dataport        Buf                  underlyingChan_output_port; \
         consumes        EventDataAvailable   underlyingChan_eventHasData; \
         /*-------------------------------------------------*/ \

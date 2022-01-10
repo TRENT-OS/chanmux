@@ -230,15 +230,14 @@ int run()
 {
     Debug_LOG_DEBUG("[%s] %s", get_instance_name(), __func__);
 
-    OS_Dataport_t port_in = OS_DATAPORT_ASSIGN(underlyingChan_input_port);
+    size_t dataport_size = underlyingChan_input_port_get_size();
+    void* dataport_base = underlyingChan_input_port;
 
     // the last byte of the dataport holds an overflow flag
-    volatile char* fifoOverflow = (volatile char*)(
-                                      (uintptr_t)OS_Dataport_getBuf(port_in)
-                                      + OS_Dataport_getSize(port_in) - 1 );
+    volatile char* fifoOverflow =
+        (volatile char*)((uintptr_t)dataport_base + (dataport_size - 1));
 
-
-    FifoDataport* underlyingFifo = (FifoDataport*)OS_Dataport_getBuf(port_in);
+    FifoDataport* underlyingFifo = (FifoDataport*)dataport_base;
 
     static char fifo_buffer[2048]; // value found from testing
     CharFifo fifo;
