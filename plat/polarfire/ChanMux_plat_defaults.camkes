@@ -1,0 +1,16 @@
+/*
+ * UART defaults for Microchip Icicle Board (Polarfire SOC, SiFive U54 cores)
+ *
+ *  Copyright (C) 2022, HENSOLDT Cyber GmbH
+ *
+ */
+
+#pragma once
+
+
+#if !defined(UART_CHANMUX)
+
+// kernel log uses HTIF or UART_0, so we can use UART_0 for ChanMux
+#define UART_CHANMUX    UART_2
+
+#endif // !defined(UART_CHANMUX)
